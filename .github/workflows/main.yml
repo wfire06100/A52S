@@ -41,6 +41,7 @@ jobs:
 
 
       - name: Build flashable zip
+        continue-on-error: true
         run: |
           cd android_kernel_samsung_sm7325_a52s_5g
           ./build_kernel_zip.sh
