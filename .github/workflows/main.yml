@@ -1,0 +1,54 @@
+name: Build Kernel Zip
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Branche ou tag à builder"
+        required: false
+        default: "ksu-next-oneui"
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 180
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+          submodules: recursive
+          fetch-depth: 0
+          # Nom du dossier de checkout (par défaut = nom du repo)
+          path: android_kernel_samsung_sm7325_a52s_5g
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            bc bison build-essential ccache curl \
+            flex git libelf-dev libncurses-dev \
+            libssl-dev make python3 unzip zip \
+            cpio rsync tar xz-utils zlib1g-dev \
+            device-tree-compiler wget \
+            gcc-aarch64-linux-gnu \
+            binutils-aarch64-linux-gnu \
+            kmod
+
+      - name: Make script executable
+        run: chmod +x ./android_kernel_samsung_sm7325_a52s_5g/build_kernel_zip.sh
+
+
+      - name: Build flashable zip
+        run: |
+          cd android_kernel_samsung_sm7325_a52s_5g
+          ./build_kernel_zip.sh
+
+      - name: Upload kernel zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: kernel-zip
+          # Le ZIP est généré à l'intérieur du dossier du kernel
+          path: android_kernel_samsung_sm7325_a52s_5g/*.zip
+          if-no-files-found: error
