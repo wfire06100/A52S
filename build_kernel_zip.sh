@@ -482,3 +482,7 @@ echo -e "  Root:       ${ROOT_DISPLAY}"
 echo -e "  Date:       ${BUILD_DATE}"
 echo -e "  Output:     ${ZIP_NAME}"
 echo -e "${GREEN}${BOLD}══════════════════════════════════════════════${NC}"
+trap - EXIT
+trap - ERR
+set +e
+exit 0
